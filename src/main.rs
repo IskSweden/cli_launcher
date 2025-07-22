@@ -16,7 +16,7 @@ use ratatui::{
 };
 
 mod app;
-use crate::app::state::App;
+use crate::app::state::{App, InputMode};
 
 fn main() -> io::Result<()> {
     let mut terminal = ratatui::init();
@@ -27,7 +27,6 @@ fn main() -> io::Result<()> {
 
 
 impl App {
-    
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
         while !self.exit {
             terminal.draw(|frame| self.draw(frame))?;
@@ -54,10 +53,43 @@ impl App {
     }
 
     fn handle_key_event(&mut self, key_event: KeyEvent) {
-        match key_event.code {
-            KeyCode::Char('q') => self.exit(),
-            KeyCode::Char(c) => self.push_input(c),
-            _ => {}
+        match self.mode {
+            InputMode::Insert => {
+                match key_event.code {
+
+                    KeyCode::Char(':') => {
+                        self.mode = InputMode::Command;
+                        self.command_input.clear();
+                    },
+
+                    KeyCode::Char(c) => { self.input.push(c); },
+
+                    KeyCode::Backspace => { self.input.pop(); },
+
+                    _ => {}
+                }
+            }
+            InputMode::Command => {
+                match key_event.code {
+
+                    KeyCode::Char(c) => { self.command_input.push(c); },
+                    
+                    KeyCode::Enter => {
+                        if self.command_input == "q" || self.command_input == "quit" {
+                            self.exit()
+                        }
+                    },
+
+                    KeyCode::Esc => { self.mode = InputMode::Insert },
+
+                    KeyCode::Backspace => { self.command_input.pop(); },
+
+                    _ => {}
+
+                }
+
+                    
+            }
         }
     }
 
@@ -65,9 +97,6 @@ impl App {
         self.exit = true;
     }
 
-    fn push_input(&mut self, pressed_buttons: char) {
-        self.input.push(pressed_buttons);
-    }
-
+    
 }
 
