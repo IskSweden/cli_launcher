@@ -3,6 +3,6 @@
 
 #[derive(Debug, Default)]
 pub struct App {
-    input: String,
-    wants_to_quit: bool,
+    pub input: String,
+    pub exit: bool,
 }
