@@ -26,8 +26,6 @@ fn main() -> io::Result<()> {
 }
 
 
-
-    
 impl App {
     
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> io::Result<()> {
@@ -39,7 +37,7 @@ impl App {
     }
     fn draw(&mut self, frame: &mut Frame) {
         
-        let greeting = Paragraph::new("Hello World!");
+        let greeting = Paragraph::new(&*self.input);
 
         frame.render_widget(greeting, frame.area());
     }
@@ -58,12 +56,17 @@ impl App {
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.exit(),
+            KeyCode::Char(c) => self.push_input(c),
             _ => {}
         }
     }
 
     fn exit(&mut self) {
         self.exit = true;
+    }
+
+    fn push_input(&mut self, pressed_buttons: char) {
+        self.input.push(pressed_buttons);
     }
 
 }
