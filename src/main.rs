@@ -16,6 +16,7 @@ use ratatui::{
 };
 
 mod app;
+mod launcher;
 use crate::app::state::{App, InputMode};
 
 fn main() -> io::Result<()> {

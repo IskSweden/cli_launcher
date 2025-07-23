@@ -1,10 +1,20 @@
-struct AppEntry {
-    name: String,       // Display name
-    exec: String,       // What to run
-    source: SourceKind, // PATH, Desktop
+use std::path::PathBuf;
+
+
+#[derive(Debug, Clone)]
+pub struct AppEntry {
+    pub name: String,       // Display name
+    pub exec: PathBuf,       // What to run
+    pub source: SourceKind, // PATH, Desktop
 }
 
-enum SourceKind {
+#[derive(Debug, Clone)]
+pub enum SourceKind {
     PathBin,
     DesktopFile,
+}
+
+impl AppEntry {
+    // todo
+
 }

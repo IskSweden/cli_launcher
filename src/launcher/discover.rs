@@ -4,27 +4,87 @@
 use walkdir::WalkDir;
 use freedesktop_desktop_entry::{default_paths, Iter};
 use std::path::PathBuf;
+use std::path::Path;
 use std::env;
+use std::fs;
+use std::os::unix::fs::PermissionsExt;
 
-use crate::appentry::AppEntry;
-use creat::appentry::SourceKind;
+use crate::launcher::appentry::AppEntry;
+use crate::launcher::appentry::SourceKind;
 
-pub fn get_desktop_entry() -> Vec<DesktopEntry> {
 
-    let mut entries_vec: Vec<DesktopEntry> = Vec::new();
-    let desktop_paths = default_paths;
-    
-    for path in desktop_paths {
-        for entry in WalkDir::new(path)
-            .into_iter()
-            .filter_map(|e| e.ok())
-            .filter(|e| e.file_type().is_file() && e.file_name().to_string_lossy().ends_with(".desktop"))
-        {
-            let path = entry.path;
 
+pub fn get_path_bins() -> Vec<String> {
+    let mut path_bins = Vec::new();
+                        
+    if let Some(path_env) = env::var_os("PATH") {
+        let paths = env::split_paths(&path_env);
+        for path_buf in paths {
+            if let Some(path_str) = path_buf.to_str() {
+                path_bins.push(path_str.to_string());
+            } else {
+                eprintln!("Warning: Could not convert path {:?} to a valid UTF-8 string. Skipping.", path_buf);
+            }
         }
+    } else {
+        eprintln!("Error: PATH environment variable not found.");
     }
 
+    path_bins
+}
 
-    
+
+pub fn iter_path_bins() -> Vec<AppEntry> {
+    let mut entries = Vec::new();
+
+    let paths = get_path_bins();
+
+    for path_str in paths {
+        let path = PathBuf::from(path_str);
+        if let Ok(dir_entries) = fs::read_dir(&path) {
+            for entry_result in dir_entries {
+                if let Ok(entry) = entry_result {
+                    let path = entry.path();
+                    if is_executable(&path){
+                        let name = entry.file_name().to_string_lossy().to_string();
+                        let exec = path.clone();
+                        let entry = AppEntry {
+                            name,
+                            exec,
+                            source: SourceKind::PathBin,
+                        };
+                        entries.push(entry)
+                    }
+                }
+            }
+        }
+    }
+    entries
+}
+
+
+
+
+pub fn discover_desktop_entries() -> Vec<AppEntry> {
+    // TODO:
+    Vec::new()
+}
+
+
+
+
+
+
+fn is_executable(path: &Path) -> bool {
+    if !path.is_file() {
+        return false;
+    }
+
+    if let Ok(metadata) = fs::symlink_metadata(path) {
+        let permissions = metadata.permissions();
+        permissions.mode() & 0o111 != 0
+    } 
+    else {
+        false
+    }
 }
