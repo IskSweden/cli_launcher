@@ -3,7 +3,7 @@
 
 
 use crate::launcher::appentry::AppEntry;
-use crate::launcher::discover::iter_path_bins;
+use crate::launcher::discover::{iter_path_bins, discover_desktop_entries};
 
 #[derive(Debug)]
 pub struct App {
@@ -26,7 +26,10 @@ pub enum InputMode {
 
 impl Default for App {
     fn default() -> Self {
-        let all_apps = iter_path_bins(); // Scanning, change later
+        let mut all_apps = iter_path_bins();
+        let desktop_apps = discover_desktop_entries();
+
+        all_apps.extend(desktop_apps);
 
         println!("Discovered {} executables", all_apps.len()); // Debug
 

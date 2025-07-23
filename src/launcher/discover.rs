@@ -75,24 +75,24 @@ pub fn discover_desktop_entries() -> Vec<AppEntry> {
     for entry in entries {
         for path in WalkDir::new(entry) {
             match path {
-                Ok(desktopapp) if desktopapp.ends_with(".desktop") => {
-                    let name = desktopapp.file_name().to_string_lossy().to_string();
-                    let exec = desktopapp.path().to_path_buf();
-                    let entry = AppEntry {
-                        name,
-                        exec,
-                        source: SourceKind::DesktopFile,
-                    };
-                    entry.push(desktopapp)
+                Ok(desktopapp) => {
+                    let path = desktopapp.path();
+                    if path.extension().and_then(|ext| ext.to_str()) == Some("desktop") {
+                        let name = desktopapp.file_name().to_string_lossy().to_string();
+                        let exec = desktopapp.path().to_path_buf();
+                        let entry = AppEntry {
+                            name,
+                            exec,
+                            source: SourceKind::DesktopFile,
+                        };
+                        results.push(entry)
+                    }
                 }
                 Err(e) => {}
             }
         }
     }
-
-
     results
-
 }
 
 
