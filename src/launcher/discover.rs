@@ -1,8 +1,10 @@
 // src/launcher/discover.rs
 // Find PATH apps or Desktop files
 
+use freedesktop_desktop_entry::DesktopEntry;
 use walkdir::WalkDir;
 use freedesktop_desktop_entry::{default_paths, Iter};
+use std::default;
 use std::path::PathBuf;
 use std::path::Path;
 use std::env;
@@ -66,9 +68,33 @@ pub fn iter_path_bins() -> Vec<AppEntry> {
 
 
 pub fn discover_desktop_entries() -> Vec<AppEntry> {
-    // TODO:
-    Vec::new()
+    let mut results = Vec::new();
+    let entries = Iter::new(default_paths().into_iter());
+
+    
+    for entry in entries {
+        for path in WalkDir::new(entry) {
+            match path {
+                Ok(desktopapp) if desktopapp.ends_with(".desktop") => {
+                    let name = desktopapp.file_name().to_string_lossy().to_string();
+                    let exec = desktopapp.path().to_path_buf();
+                    let entry = AppEntry {
+                        name,
+                        exec,
+                        source: SourceKind::DesktopFile,
+                    };
+                    entry.push(desktopapp)
+                }
+                Err(e) => {}
+            }
+        }
+    }
+
+
+    results
+
 }
+
 
 
 
