@@ -13,7 +13,8 @@ pub struct App {
     pub exit: bool,
 
 
-    pub all_apps: Vec<AppEntry>
+    pub all_apps: Vec<AppEntry>,
+    pub selected_index: usize,
 }
 
 #[derive(Debug, Default)]
@@ -39,6 +40,7 @@ impl Default for App {
             mode: InputMode::Insert,
             exit: false,
             all_apps,
+            selected_index: 0,
         }
     }
 }

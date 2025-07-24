@@ -67,6 +67,17 @@ impl App {
 
                     KeyCode::Backspace => { self.input.pop(); },
 
+                    KeyCode::Up => {
+                        if self.selected_index > 0 {
+                            self.selected_index -= 1;
+                        }
+                    }
+                    KeyCode::Down => {
+                        if self.selected_index + 1 < self.all_apps.len() {
+                            self.selected_index += 1;
+                        }
+                    }
+
                     _ => {}
                 }
             }
