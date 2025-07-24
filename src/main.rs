@@ -13,6 +13,10 @@ use ratatui::{
     text::{Line, Text},
     widgets::{Block, Paragraph, Widget},
     DefaultTerminal, Frame,
+    layout::{Layout, Constraint, Direction},
+    style::{Style, Color, Modifier},
+    widgets::{List, ListItem, ListState, Wrap},
+    prelude::Alignment
 };
 
 mod app;
@@ -35,12 +39,51 @@ impl App {
         }
         Ok(())
     }
-    fn draw(&mut self, frame: &mut Frame) {
-        
-        let greeting = Paragraph::new(&*self.input);
 
-        frame.render_widget(greeting, frame.area());
+
+    fn draw(&mut self, frame: &mut Frame) {
+        // Split screen vertically into two chunks
+        let chunks = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([
+                Constraint::Percentage(90), // Top = list
+                Constraint::Percentage(10), // Bottom = footer
+            ])
+            .split(frame.area());
+
+        // Build list of visible items
+        let total_apps = self.all_apps.len();
+        let visible_count = chunks[0].height.saturating_sub(1) as usize;
+
+        let start = self.selected_index
+                .saturating_sub(visible_count / 2)
+                .min(total_apps.saturating_sub(visible_count));
+
+        let end = (start + visible_count).min(total_apps);
+
+        let list_items: Vec<ListItem> = self.all_apps[start..end]
+            .iter()
+            .map(|app| ListItem::new(app.name.clone()))
+            .collect();
+
+        let list = List::new(list_items)
+            .highlight_symbol("→ ")
+            .highlight_style(Style::default().fg(Color::Green).add_modifier(Modifier::BOLD));
+
+        // Set list state with selected index relative to visible window
+        let mut list_state = ListState::default();
+        list_state.select(Some(self.selected_index.saturating_sub(start)));
+
+        frame.render_stateful_widget(list, chunks[0], &mut list_state);
+
+        // Draw footer bar
+        let footer = Paragraph::new("↑ ↓ to scroll • :q to quit")
+            .alignment(Alignment::Left)
+            .wrap(Wrap { trim: true });
+
+        frame.render_widget(footer, chunks[1]);
     }
+
 
 
     fn handle_events(&mut self) -> io::Result<()> {
