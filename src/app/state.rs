@@ -1,9 +1,8 @@
 // src/app/state.rs
 // Holds input, filtered list, selected index etc.
 
-
 use crate::launcher::appentry::AppEntry;
-use crate::launcher::discover::{iter_path_bins, discover_desktop_entries};
+use crate::launcher::discover::{discover_desktop_entries, iter_path_bins};
 
 #[derive(Debug)]
 pub struct App {
@@ -11,7 +10,6 @@ pub struct App {
     pub command_input: String,
     pub mode: InputMode,
     pub exit: bool,
-
 
     pub all_apps: Vec<AppEntry>,
     pub selected_index: usize,
@@ -26,20 +24,19 @@ pub enum InputMode {
     Command,
 }
 
-
 impl Default for App {
     fn default() -> Self {
         let mut all_apps = iter_path_bins();
         let desktop_apps = discover_desktop_entries();
-        let mut filtered_apps = all_apps.clone();
+        let filtered_apps = all_apps.clone();
 
         all_apps.extend(desktop_apps);
 
-        println!("Discovered {} executables", all_apps.len()); // Debug
+        println!("Discovered {} executables", filtered_apps.len());
 
         App {
             input: String::new(),
-            command_input:String::new(),
+            command_input: String::new(),
             mode: InputMode::Insert,
             exit: false,
             all_apps,

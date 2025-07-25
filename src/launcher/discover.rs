@@ -1,31 +1,30 @@
 // src/launcher/discover.rs
 // Find PATH apps or Desktop files
 
-use freedesktop_desktop_entry::DesktopEntry;
-use walkdir::WalkDir;
-use freedesktop_desktop_entry::{default_paths, Iter};
-use std::default;
-use std::path::PathBuf;
-use std::path::Path;
+use freedesktop_desktop_entry::{Iter, default_paths};
 use std::env;
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
+use std::path::Path;
+use std::path::PathBuf;
+use walkdir::WalkDir;
 
 use crate::launcher::appentry::AppEntry;
 use crate::launcher::appentry::SourceKind;
 
-
-
 pub fn get_path_bins() -> Vec<String> {
     let mut path_bins = Vec::new();
-                        
+
     if let Some(path_env) = env::var_os("PATH") {
         let paths = env::split_paths(&path_env);
         for path_buf in paths {
             if let Some(path_str) = path_buf.to_str() {
                 path_bins.push(path_str.to_string());
             } else {
-                eprintln!("Warning: Could not convert path {:?} to a valid UTF-8 string. Skipping.", path_buf);
+                eprintln!(
+                    "Warning: Could not convert path {:?} to a valid UTF-8 string. Skipping.",
+                    path_buf
+                );
             }
         }
     } else {
@@ -34,7 +33,6 @@ pub fn get_path_bins() -> Vec<String> {
 
     path_bins
 }
-
 
 pub fn iter_path_bins() -> Vec<AppEntry> {
     let mut entries = Vec::new();
@@ -47,7 +45,7 @@ pub fn iter_path_bins() -> Vec<AppEntry> {
             for entry_result in dir_entries {
                 if let Ok(entry) = entry_result {
                     let path = entry.path();
-                    if is_executable(&path){
+                    if is_executable(&path) {
                         let name = entry.file_name().to_string_lossy().to_string();
                         let exec = path.clone();
                         let entry = AppEntry {
@@ -64,14 +62,10 @@ pub fn iter_path_bins() -> Vec<AppEntry> {
     entries
 }
 
-
-
-
 pub fn discover_desktop_entries() -> Vec<AppEntry> {
     let mut results = Vec::new();
-    let entries = Iter::new(default_paths().into_iter());
+    let entries = Iter::new(default_paths());
 
-    
     for entry in entries {
         for path in WalkDir::new(entry) {
             match path {
@@ -88,18 +82,12 @@ pub fn discover_desktop_entries() -> Vec<AppEntry> {
                         results.push(entry)
                     }
                 }
-                Err(e) => {}
+                Err(_e) => {}
             }
         }
     }
     results
 }
-
-
-
-
-
-
 
 fn is_executable(path: &Path) -> bool {
     if !path.is_file() {
@@ -109,8 +97,7 @@ fn is_executable(path: &Path) -> bool {
     if let Ok(metadata) = fs::symlink_metadata(path) {
         let permissions = metadata.permissions();
         permissions.mode() & 0o111 != 0
-    } 
-    else {
+    } else {
         false
     }
 }

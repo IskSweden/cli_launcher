@@ -1,2 +1,2 @@
-pub mod discover;
 pub mod appentry;
+pub mod discover;
