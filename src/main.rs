@@ -117,6 +117,8 @@ impl App {
                 KeyCode::Char(':') => {
                     self.mode = InputMode::Command;
                     self.command_input.clear();
+                    self.update_filter();
+
                 }
 
                 KeyCode::Char(c) => {
@@ -126,6 +128,8 @@ impl App {
 
                 KeyCode::Backspace => {
                     self.input.pop();
+                    self.update_filter();
+
                 }
 
                 KeyCode::Up => {
@@ -144,6 +148,8 @@ impl App {
             InputMode::Command => match key_event.code {
                 KeyCode::Char(c) => {
                     self.command_input.push(c);
+                    self.update_filter();
+
                 }
 
                 KeyCode::Enter => {
@@ -152,7 +158,10 @@ impl App {
                     }
                 }
 
-                KeyCode::Esc => self.mode = InputMode::Insert,
+                KeyCode::Esc => { 
+                    self.mode = InputMode::Insert;
+                    self.update_filter();
+                }
 
                 KeyCode::Backspace => {
                     self.command_input.pop();

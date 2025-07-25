@@ -31,6 +31,7 @@ impl Default for App {
     fn default() -> Self {
         let mut all_apps = iter_path_bins();
         let desktop_apps = discover_desktop_entries();
+        let mut filtered_apps = all_apps.clone();
 
         all_apps.extend(desktop_apps);
 
@@ -43,7 +44,7 @@ impl Default for App {
             exit: false,
             all_apps,
             selected_index: 0,
-            filtered_apps: Vec::new(),
+            filtered_apps,
         }
     }
 }
