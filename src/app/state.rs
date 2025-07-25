@@ -15,6 +15,8 @@ pub struct App {
 
     pub all_apps: Vec<AppEntry>,
     pub selected_index: usize,
+
+    pub filtered_apps: Vec<AppEntry>,
 }
 
 #[derive(Debug, Default)]
@@ -41,6 +43,7 @@ impl Default for App {
             exit: false,
             all_apps,
             selected_index: 0,
+            filtered_apps: Vec::new(),
         }
     }
 }
