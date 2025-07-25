@@ -3,6 +3,7 @@ name = "cla"
 version = "1.0.0"
 authors = ["Isak Skoog <skoog.isak@gmail.com>"]
 edition = "2024"
+license = "MIT"
 
 [dependencies]
 ratatui = "0.29.0"
