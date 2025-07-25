@@ -143,6 +143,9 @@ impl App {
                         self.selected_index += 1;
                     }
                 }
+                KeyCode::Enter => {
+                    self.launch_selected();
+                }
 
                 _ => {}
             },
@@ -189,5 +192,22 @@ impl App {
         }
 
         self.filtered_apps = filtered;
+    }
+
+    fn launch_selected(&mut self) {
+        if let Some(app) = self.filtered_apps.get(self.selected_index) {
+            let exec_str = app.exec.to_string_lossy();
+            let parts: Vec<&str> = exec_str.split_whitespace().collect();
+
+            if let Some((cmd, args)) = parts.split_first() {
+                match std::process::Command::new(cmd).args(args).spawn() {
+                    Ok(_) => self.exit = true,
+
+                    Err(e) => eprintln!("Error launching app: {}", e),
+                }
+            } else {
+                eprintln!("Could not parse exec command: '{}'", exec_str);
+            }
+        }
     }
 }
