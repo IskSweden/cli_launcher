@@ -22,8 +22,7 @@ pub fn get_path_bins() -> Vec<String> {
                 path_bins.push(path_str.to_string());
             } else {
                 eprintln!(
-                    "Warning: Could not convert path {:?} to a valid UTF-8 string. Skipping.",
-                    path_buf
+                    "Warning: Could not convert path {path_buf:?} to a valid UTF-8 string. Skipping."
                 );
             }
         }

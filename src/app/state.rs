@@ -32,8 +32,6 @@ impl Default for App {
 
         all_apps.extend(desktop_apps);
 
-        println!("Discovered {} executables", filtered_apps.len());
-
         App {
             input: String::new(),
             command_input: String::new(),
