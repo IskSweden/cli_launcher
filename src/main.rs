@@ -55,11 +55,12 @@ impl App {
         if self.filtered_apps.is_empty() {
             let empty = Paragraph::new("No matches found.");
             frame.render_widget(empty, chunks[0]);
-            return;
+        } else {
+            
         }
 
         // Build list of visible items
-        let total_apps = self.all_apps.len();
+        let total_apps = self.filtered_apps.len();
         let visible_count = chunks[0].height.saturating_sub(1) as usize;
 
         let start = self
