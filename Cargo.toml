@@ -1,6 +1,7 @@
 [package]
 name = "cli_launcher"
-version = "0.1.0"
+version = "1.0.0"
+authors = ["Isak Skoog <skoog.isak@gmail.com>"]
 edition = "2024"
 
 [dependencies]
