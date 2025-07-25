@@ -85,7 +85,7 @@ impl App {
         // Draw footer bar
         // let footer = Paragraph::new("↑ ↓ to scroll • :q to quit")
         let footer_text = format!(
-            "↑ ↓ to scroll • :q to quit \n Search: {} \n \n Command: {}",
+            "↑ ↓ to scroll • :q to quit \n Search: {} \n Command: {}",
             self.input, self.command_input
         );
         let footer = Paragraph::new(footer_text)
